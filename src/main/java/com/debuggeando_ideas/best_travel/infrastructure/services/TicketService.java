@@ -8,6 +8,7 @@ import com.debuggeando_ideas.best_travel.domain.repositories.CustomerRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.FlyRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.TicketRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.ITicketService;
+import com.debuggeando_ideas.best_travel.util.BestTravelUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -38,10 +39,10 @@ public class TicketService implements ITicketService {
                 .id(UUID.randomUUID())
                 .fly(fly)
                 .customer(customer)
-                .price(fly.getPrice().multiply(BigDecimal.valueOf(0.25)))
+                .price(fly.getPrice().add(fly.getPrice().multiply(charger_price_percentage)))
                 .purchaseDate(LocalDate.now())
-                .arrivalDate(LocalDateTime.now())
-                .departureDate(LocalDateTime.now())
+                .arrivalDate(BestTravelUtil.getRandomLatter())
+                .departureDate(BestTravelUtil.getRandomSoon())
                 .build();
 
         var ticketPersisted = this.ticketRepository.save(ticketToPersist);
@@ -63,9 +64,9 @@ public class TicketService implements ITicketService {
         var fly = flyRepository.findById(request.getIdFly()).orElseThrow();
 
         ticketToUpdate.setFly(fly);
-        ticketToUpdate.setPrice(BigDecimal.valueOf(0.25));
-        ticketToUpdate.setDepartureDate(LocalDateTime.now());
-        ticketToUpdate.setArrivalDate(LocalDateTime.now());
+        ticketToUpdate.setPrice(fly.getPrice().add(fly.getPrice().multiply(charger_price_percentage)));
+        ticketToUpdate.setDepartureDate(BestTravelUtil.getRandomSoon());
+        ticketToUpdate.setArrivalDate(BestTravelUtil.getRandomLatter());
 
         var ticketUpdated = this.ticketRepository.save(ticketToUpdate);
 
@@ -80,6 +81,12 @@ public class TicketService implements ITicketService {
         this.ticketRepository.delete(ticketToDelete);
     }
 
+    @Override
+    public BigDecimal findPrice(Long flyId) {
+        var fly = this.flyRepository.findById(flyId).orElseThrow();
+        return fly.getPrice().add(fly.getPrice().multiply(charger_price_percentage));
+    }
+
     private TicketResponse entityToResponse(TicketEntity entity) {
         var response = new TicketResponse();
         BeanUtils.copyProperties(entity, response);
@@ -88,4 +95,8 @@ public class TicketService implements ITicketService {
         response.setFly(flyResponse);
         return response;
     }
+
+    private static final BigDecimal charger_price_percentage = BigDecimal.valueOf(0.25);
+
+
 }
