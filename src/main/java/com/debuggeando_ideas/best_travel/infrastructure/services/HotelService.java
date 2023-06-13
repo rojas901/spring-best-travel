@@ -1,12 +1,10 @@
 package com.debuggeando_ideas.best_travel.infrastructure.services;
 
-import com.debuggeando_ideas.best_travel.api.models.responses.FlyResponse;
 import com.debuggeando_ideas.best_travel.api.models.responses.HotelResponse;
-import com.debuggeando_ideas.best_travel.domain.entities.FlyEntity;
 import com.debuggeando_ideas.best_travel.domain.entities.HotelEntity;
 import com.debuggeando_ideas.best_travel.domain.repositories.HotelRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.IHotelService;
-import com.debuggeando_ideas.best_travel.util.SortType;
+import com.debuggeando_ideas.best_travel.util.enums.SortType;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;

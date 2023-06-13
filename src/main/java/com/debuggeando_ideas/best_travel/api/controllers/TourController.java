@@ -3,6 +3,7 @@ package com.debuggeando_ideas.best_travel.api.controllers;
 import com.debuggeando_ideas.best_travel.api.models.request.TourRequest;
 import com.debuggeando_ideas.best_travel.api.models.responses.TourResponse;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.ITourService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class TourController {
     private final ITourService tourService;
 
     @PostMapping
-    public ResponseEntity<TourResponse> post(@RequestBody TourRequest request) {
+    public ResponseEntity<TourResponse> post(@Valid @RequestBody TourRequest request) {
         log.info(tourService.getClass().getSimpleName());
         return ResponseEntity.ok(this.tourService.create(request));
     }
