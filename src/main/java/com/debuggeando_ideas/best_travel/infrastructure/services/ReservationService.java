@@ -8,6 +8,7 @@ import com.debuggeando_ideas.best_travel.domain.repositories.CustomerRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.HotelRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.ReservationRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.IReservationService;
+import com.debuggeando_ideas.best_travel.infrastructure.helpers.CustomerHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +29,7 @@ public class ReservationService implements IReservationService {
     private final HotelRepository hotelRepository;
     private final CustomerRepository customerRepository;
     private final ReservationRepository reservationRepository;
+    private final CustomerHelper customerHelper;
 
     @Override
     public ReservationResponse create(ReservationRequest request) {
@@ -49,6 +51,8 @@ public class ReservationService implements IReservationService {
                 .build();
 
         var reservationPersisted = this.reservationRepository.save(reservationToPersist);
+
+        this.customerHelper.increase(customer.getDni(), ReservationService.class);
 
         log.info("Reservation saved with id: {}", reservationPersisted.getId());
 
@@ -104,6 +108,6 @@ public class ReservationService implements IReservationService {
         return response;
     }
 
-    private static final BigDecimal charges_price_percentage = BigDecimal.valueOf(0.20);
+    public static final BigDecimal charges_price_percentage = BigDecimal.valueOf(0.20);
 
 }

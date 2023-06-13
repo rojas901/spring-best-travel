@@ -8,6 +8,7 @@ import com.debuggeando_ideas.best_travel.domain.repositories.CustomerRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.FlyRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.TicketRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.ITicketService;
+import com.debuggeando_ideas.best_travel.infrastructure.helpers.CustomerHelper;
 import com.debuggeando_ideas.best_travel.util.BestTravelUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class TicketService implements ITicketService {
     private final FlyRepository flyRepository;
     private final CustomerRepository customerRepository;
     private final TicketRepository ticketRepository;
+    private final CustomerHelper customerHelper;
 
     @Override
     public TicketResponse create(TicketRequest request) {
@@ -46,6 +48,8 @@ public class TicketService implements ITicketService {
                 .build();
 
         var ticketPersisted = this.ticketRepository.save(ticketToPersist);
+
+        this.customerHelper.increase(customer.getDni(), TicketService.class);
 
         log.info("Ticket saved with id: {}", ticketPersisted.getId());
 
@@ -96,7 +100,7 @@ public class TicketService implements ITicketService {
         return response;
     }
 
-    private static final BigDecimal charger_price_percentage = BigDecimal.valueOf(0.25);
+    public static final BigDecimal charger_price_percentage = BigDecimal.valueOf(0.25);
 
 
 }
