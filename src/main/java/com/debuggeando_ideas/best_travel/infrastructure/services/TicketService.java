@@ -11,6 +11,7 @@ import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.ITicke
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.ApiCurrencyConnectorHelper;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.BlackListHelper;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.CustomerHelper;
+import com.debuggeando_ideas.best_travel.infrastructure.helpers.EmailHelper;
 import com.debuggeando_ideas.best_travel.util.BestTravelUtil;
 import com.debuggeando_ideas.best_travel.util.enums.Tables;
 import com.debuggeando_ideas.best_travel.util.exceptions.IdNotFoundException;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Currency;
+import java.util.Objects;
 import java.util.UUID;
 
 @Transactional
@@ -38,6 +40,7 @@ public class TicketService implements ITicketService {
     private final CustomerHelper customerHelper;
     private final BlackListHelper blackListHelper;
     private final ApiCurrencyConnectorHelper apiCurrencyConnectorHelper;
+    public final EmailHelper emailHelper;
 
     @Override
     public TicketResponse create(TicketRequest request) {
@@ -60,6 +63,10 @@ public class TicketService implements ITicketService {
         this.customerHelper.increase(customer.getDni(), TicketService.class);
 
         log.info("Ticket saved with id: {}", ticketPersisted.getId());
+
+        if (Objects.nonNull(request.getEmail())) {
+            this.emailHelper.sendMail(request.getEmail(), customer.getFullName(), Tables.ticket.name());
+        }
 
         return this.entityToResponse(ticketPersisted);
     }

@@ -10,6 +10,7 @@ import com.debuggeando_ideas.best_travel.domain.repositories.TourRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.ITourService;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.BlackListHelper;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.CustomerHelper;
+import com.debuggeando_ideas.best_travel.infrastructure.helpers.EmailHelper;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.TourHelper;
 import com.debuggeando_ideas.best_travel.util.enums.Tables;
 import com.debuggeando_ideas.best_travel.util.exceptions.IdNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,7 @@ public class TourService implements ITourService {
     private final TourHelper tourHelper;
     private final CustomerHelper customerHelper;
     private final BlackListHelper blackListHelper;
+    private final EmailHelper emailHelper;
 
     @Override
     public TourResponse create(TourRequest request) {
@@ -57,6 +60,11 @@ public class TourService implements ITourService {
         var tourSaved = this.tourRepository.save(tourToSave);
 
         this.customerHelper.increase(customer.getDni(), TourService.class);
+
+        if (Objects.nonNull(request.getEmail())) {
+            this.emailHelper.sendMail(request.getEmail(), customer.getFullName(), Tables.tour.name());
+        }
+
         return TourResponse.builder()
                 .reservationsIds(tourSaved.getReservations().stream().map(ReservationEntity::getId).collect(Collectors.toSet()))
                 .ticketsIds(tourSaved.getTickets().stream().map(TicketEntity::getId).collect(Collectors.toSet()))
