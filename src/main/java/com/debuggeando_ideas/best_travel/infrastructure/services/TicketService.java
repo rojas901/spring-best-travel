@@ -8,6 +8,7 @@ import com.debuggeando_ideas.best_travel.domain.repositories.CustomerRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.FlyRepository;
 import com.debuggeando_ideas.best_travel.domain.repositories.TicketRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.ITicketService;
+import com.debuggeando_ideas.best_travel.infrastructure.helpers.ApiCurrencyConnectorHelper;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.BlackListHelper;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.CustomerHelper;
 import com.debuggeando_ideas.best_travel.util.BestTravelUtil;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Currency;
 import java.util.UUID;
 
 @Transactional
@@ -35,6 +37,7 @@ public class TicketService implements ITicketService {
     private final TicketRepository ticketRepository;
     private final CustomerHelper customerHelper;
     private final BlackListHelper blackListHelper;
+    private final ApiCurrencyConnectorHelper apiCurrencyConnectorHelper;
 
     @Override
     public TicketResponse create(TicketRequest request) {
@@ -91,9 +94,16 @@ public class TicketService implements ITicketService {
     }
 
     @Override
-    public BigDecimal findPrice(Long flyId) {
+    public BigDecimal findPrice(Long flyId, Currency currency) {
         var fly = this.flyRepository.findById(flyId).orElseThrow(() -> new IdNotFoundException(Tables.fly.name()));
-        return fly.getPrice().add(fly.getPrice().multiply(charger_price_percentage));
+        var priceInDollars = fly.getPrice().add(fly.getPrice().multiply(charger_price_percentage));
+
+        if (currency.equals(Currency.getInstance("USD"))) return priceInDollars;
+
+        var currencyDTO = this.apiCurrencyConnectorHelper.getCurrency(currency);
+        log.info("API currency in {}, response {}",currencyDTO.getExchangeDate().toString(),
+                currencyDTO.getRates());
+        return priceInDollars.multiply(currencyDTO.getRates().get(currency));
     }
 
     private TicketResponse entityToResponse(TicketEntity entity) {

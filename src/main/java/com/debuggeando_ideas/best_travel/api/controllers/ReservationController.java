@@ -17,9 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "reservation")
@@ -63,8 +61,12 @@ public class ReservationController {
 
     @Operation(summary = "Return a hotel price with id Hotel passed")
     @GetMapping
-    public ResponseEntity<Map<String, BigDecimal>> getHotelPrice(@RequestParam Long hotelId) {
-        return ResponseEntity.ok(Collections.singletonMap("hotelPrice", this.reservationService.findPrice(hotelId)));
+    public ResponseEntity<Map<String, BigDecimal>> getHotelPrice(
+            @RequestParam Long hotelId,
+            @RequestHeader(required = false) Currency currency
+            ) {
+        if (Objects.isNull(currency)) currency = Currency.getInstance("USD");
+        return ResponseEntity.ok(Collections.singletonMap("hotelPrice", this.reservationService.findPrice(hotelId, currency)));
     }
 
 }
