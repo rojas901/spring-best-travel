@@ -2,11 +2,11 @@ package com.debuggeando_ideas.best_travel.infrastructure.services;
 
 import com.debuggeando_ideas.best_travel.api.models.request.TourRequest;
 import com.debuggeando_ideas.best_travel.api.models.responses.TourResponse;
-import com.debuggeando_ideas.best_travel.domain.entities.*;
-import com.debuggeando_ideas.best_travel.domain.repositories.CustomerRepository;
-import com.debuggeando_ideas.best_travel.domain.repositories.FlyRepository;
-import com.debuggeando_ideas.best_travel.domain.repositories.HotelRepository;
-import com.debuggeando_ideas.best_travel.domain.repositories.TourRepository;
+import com.debuggeando_ideas.best_travel.domain.entities.jpa.*;
+import com.debuggeando_ideas.best_travel.domain.repositories.jpa.CustomerRepository;
+import com.debuggeando_ideas.best_travel.domain.repositories.jpa.FlyRepository;
+import com.debuggeando_ideas.best_travel.domain.repositories.jpa.HotelRepository;
+import com.debuggeando_ideas.best_travel.domain.repositories.jpa.TourRepository;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.ITourService;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.BlackListHelper;
 import com.debuggeando_ideas.best_travel.infrastructure.helpers.CustomerHelper;
@@ -15,7 +15,6 @@ import com.debuggeando_ideas.best_travel.infrastructure.helpers.TourHelper;
 import com.debuggeando_ideas.best_travel.util.enums.Tables;
 import com.debuggeando_ideas.best_travel.util.exceptions.IdNotFoundException;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
