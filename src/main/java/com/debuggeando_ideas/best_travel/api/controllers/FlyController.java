@@ -2,6 +2,7 @@ package com.debuggeando_ideas.best_travel.api.controllers;
 
 import com.debuggeando_ideas.best_travel.api.models.responses.FlyResponse;
 import com.debuggeando_ideas.best_travel.infrastructure.abstract_services.IFlyService;
+import com.debuggeando_ideas.best_travel.util.annotations.Notify;
 import com.debuggeando_ideas.best_travel.util.enums.SortType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +26,7 @@ public class FlyController {
 
     @Operation(summary = "Return a page with flights can be sorted or not")
     @GetMapping
+    @Notify(value = "GET Fly")
     public ResponseEntity<Page<FlyResponse>> getAll(
             @RequestParam Integer page,
             @RequestParam Integer size,
